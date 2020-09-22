@@ -4,10 +4,6 @@ FROM golang:alpine AS builder
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 
 RUN chmod +x /usr/bin/fwatchdog
-RUN apk add tzdata \
-    && cp /usr/share/zoneinfo/US/Central /etc/localtime \
-    && echo "US/Central" > /etc/timezone \
-    && apk del tzdata
 
 # Set necessary environmet variables needed for our image
 ENV GO111MODULE=on \
@@ -33,8 +29,6 @@ RUN cp /build/main .
 # Build a small image
 FROM alpine:3.12
 
-COPY --from=builder /etc/localtime /etc/localtime
-COPY --from=builder /etc/timezone /etc/timezone
 COPY --from=builder /usr/bin/fwatchdog .
 COPY --from=builder /dist/main /
 
